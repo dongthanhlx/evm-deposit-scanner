@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Deposit {
+  id              Int      @id @default(autoincrement())
+  txHash          String
+  logIndex        Int
+  chainId         Int
+  blockNumber     BigInt
+  blockTimestamp  DateTime
+  from            String
+  to              String
+  contractAddress String?
+  amount          Decimal   @db.Decimal(78, 0)
+  tokenSymbol     String?
+  createdAt       DateTime @default(now())
+
+  @@unique([txHash, logIndex, chainId])
+}
+
+model Checkpoint {
+  chainId            Int      @id
+  lastProcessedBlock BigInt
+  updatedAt          DateTime @updatedAt
+}
+
+model Wallet {
+  address String   @id   // stored lowercase
+  addedAt DateTime @default(now())
+}

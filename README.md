@@ -1,5 +1,9 @@
 # evm-deposit-scanner
 
+> **Note:** This repository is an extracted module from a production project at **Aliniex** (private GitLab). It is published here as a portfolio reference — the full system, production configuration, and deployment pipeline are not included.
+
+---
+
 Real-time EVM deposit detector. Watches a set of addresses across multiple chains via Alchemy WebSocket, saves incoming deposits to PostgreSQL, and sends Telegram notifications.
 
 ## What it does
@@ -9,6 +13,17 @@ Real-time EVM deposit detector. Watches a set of addresses across multiple chain
 - Saves each deposit idempotently — safe to restart, no double-processing
 - Sends a Telegram notification per deposit with amount, explorer links, and token info
 - Manages watched addresses via Telegram commands (`/addwallet`, `/removewallet`, `/listwallet`)
+
+## Context — where this fits in the original system
+
+The Aliniex platform is a multi-service crypto exchange. This module is the **on-chain deposit indexer** — one service responsible for detecting when users send funds to their assigned deposit addresses.
+
+In production it runs as a standalone service alongside:
+- A user & wallet management API (assigns deposit addresses per user)
+- A settlement engine (credits user balances after deposit confirmation)
+- An admin dashboard and risk engine
+
+This repo contains only the indexer. Dependencies on internal APIs have been replaced with environment variables (`WATCHED_ADDRESSES`, `WATCHED_CONTRACTS`) so the module can run independently.
 
 ## Stack
 
@@ -96,9 +111,9 @@ Send these in the chat/channel set as `TELEGRAM_CHAT_ID`:
 ## Development
 
 ```bash
-npm test          # run all tests
+npm test             # run all tests
 npm run test:watch   # watch mode
-npm run build     # typecheck (tsc --noEmit)
+npm run build        # typecheck (tsc --noEmit)
 ```
 
 ## Resilience notes
